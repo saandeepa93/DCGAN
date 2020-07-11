@@ -55,7 +55,8 @@ def train(configs):
   img_lst = []
   iters = 0
   print("training GAN...")
-  for epoch in tqdm(range(configs['hypers']['epochs'])):
+  for epoch in range(configs['hypers']['epochs']):
+    print(f"in epoch {epoch}")
     for i, real_data in enumerate(dataloader, 0):
       b_size = real_data.size(0)
       #Train Discriminator
@@ -74,8 +75,8 @@ def train(configs):
       output = discriminator(fake_data.detach()).view(-1)
       lossD_fake = criterion(output, label)
       lossD_fake.backward()
-      lossD = lossD_real + lossD_fake
       dg_z1 = output.mean().item()
+      lossD = lossD_real + lossD_fake
       optimizerD.step()
 
 
@@ -88,17 +89,18 @@ def train(configs):
       dg_z2 = output.mean().item()
       optimizerG.step()
 
-      if i % 5 == 0:
-        print(f"loss_D:{lossD.item()}\n, loss_G:{lossG.item()}\n, D(x):{dx}\n, D(G(z)):{dg_z1}|{dg_z2}\n")
-        # print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
-                  # % (epoch, 1, i, len(dataloader),
-                  #    lossD.item(), lossG.item(), dx, dg_z1, dg_z2))
+      if i % 1 == 0:
+        # print(f"loss_D:{lossD.item()}\n, loss_G:{lossG.item()}\n, D(x) + D(G(z)):{dx}\n, D(G(z)):{dg_z2}\n")
+        print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
+                  % (epoch, 1, i, len(dataloader),
+                     lossD.item(), lossG.item(), dx, dg_z1, dg_z2))
       Gloss.append(lossD.item())
       Dloss.append(lossG.item())
 
-      if iters % 10:
-        with torch.no_grad():
-          fake_data = generator(fixed_noise).detach()
-        img_lst.append(fake_data.permute(0, 2, 3, 1))
+      # if iters % 10:
+      #   with torch.no_grad():
+      #     fake_data = generator(fixed_noise).detach()
+      #   util.cvshow(fake_data[0].permute(1, 2, 0).numpy())
+      # iters += 1
+        # img_lst.append(fake_data)
 
-    e()

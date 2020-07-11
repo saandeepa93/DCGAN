@@ -1,17 +1,19 @@
 paths:
-  dataset: ./Columbia Gaze Data Set/
+  dataset: ./dataset/
+  model: ./models/
 
 image:
-  size: 64
+  size: 28
 
 hypers:
-  batch_size: 8
+  batch_size: 64
   lr: 0.0002
-  epochs: 1
+  epochs: 5
   beta: 0.5
-  nz: 100
   ngf: 64
   ndf: 64
   ngpu: 0
-  nc: 3
+  nc: 1
+  z: 100
+
 
