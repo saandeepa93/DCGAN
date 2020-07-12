@@ -11,25 +11,25 @@ class Generator(nn.Module):
     self.hidden0 = nn.Sequential(
       nn.ConvTranspose2d(nz, ngf*8, 4, 1, 0, bias = False),
       nn.BatchNorm2d(ngf*8),
-      nn.ReLU(True)
+      nn.LeakyReLU(True)
     )
 
     self.hidden1 = nn.Sequential(
       nn.ConvTranspose2d(ngf*8, ngf*4, 4, 2, 1, bias = False),
       nn.BatchNorm2d(ngf*4),
-      nn.ReLU(True)
+      nn.LeakyReLU(True)
     )
 
     self.hidden2 = nn.Sequential(
       nn.ConvTranspose2d(ngf*4, ngf*2, 4, 2, 1, bias = False),
       nn.BatchNorm2d(ngf*2),
-      nn.ReLU(True)
+      nn.LeakyReLU(True)
     )
 
     self.hidden3 = nn.Sequential(
       nn.ConvTranspose2d(ngf*2, ngf, 4, 2, 1, bias = False),
       nn.BatchNorm2d(ngf),
-      nn.ReLU(True)
+      nn.LeakyReLU(True)
     )
 
     self.out_mnist = nn.Sequential(

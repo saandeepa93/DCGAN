@@ -1,6 +1,6 @@
 paths:
   dataset: ./dataset/
-  model: ./models/
+  model: ./models/mnist_generator.pt
 
 image:
   size: 28

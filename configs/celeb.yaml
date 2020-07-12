@@ -1,6 +1,6 @@
 paths:
-  dataset: ./img_align_celeba
-  model: ./models/
+  dataset: ./input/img_align_celeba
+  model: ./models/celeb_generator.pt
 
 image:
   size: 64
@@ -8,7 +8,7 @@ image:
 hypers:
   batch_size: 64
   lr: 0.0002
-  epochs: 5
+  epochs: 1
   beta: 0.5
   ngf: 64
   ndf: 64
