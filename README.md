@@ -34,4 +34,4 @@ Any config setting can be found in `./config.yaml` file.
 <img src="./artifacts/mnist.png" width="500px"/>
 
 ## Sample CELEB output after 10 epochs
-<img src="./artifacts/celeb.png" width="500px"/>
+<img src="./artifacts/celeb_2.png" width="500px"/>
