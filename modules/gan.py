@@ -1,10 +1,11 @@
 import torch
-from torch import nn
+from torch import nn, save, load
 
 
 class Generator(nn.Module):
-  def __init__(self, nz, ngf, nc):
+  def __init__(self, nz, ngf, nc, dataset_name):
     super(Generator, self).__init__()
+    self.dname = dataset_name
     self.hidden0 = nn.Sequential(
       nn.ConvTranspose2d(nz, ngf*8, 4, 1, 0, bias = False),
       nn.BatchNorm2d(ngf*8),
@@ -23,9 +24,19 @@ class Generator(nn.Module):
       nn.ReLU(True)
     )
 
+    self.hidden3 = nn.Sequential(
+      nn.ConvTranspose2d(ngf*2, ngf, 4, 2, 1, bias = False),
+      nn.BatchNorm2d(ngf),
+      nn.ReLU(True)
+    )
 
-    self.out = nn.Sequential(
+    self.out_mnist = nn.Sequential(
       nn.ConvTranspose2d(ngf*2, nc, 4, 2, 3, bias = False),
+      nn.Tanh()
+    )
+
+    self.out_others = nn.Sequential(
+      nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias = False),
       nn.Tanh()
     )
 
@@ -34,7 +45,11 @@ class Generator(nn.Module):
     x = self.hidden0(x)
     x = self.hidden1(x)
     x = self.hidden2(x)
-    x = self.out(x)
+    if self.dname != 'mnist':
+      x = self.hidden3(x)
+      x = self.out_others(x)
+    else:
+      x = self.out_mnist(x)
     return x
 
 
@@ -59,8 +74,9 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-  def __init__(self, nc, ndf):
+  def __init__(self, nc, ndf, dataset_name):
     super(Discriminator, self).__init__()
+    self.dname = dataset_name
     self.hidden0 = nn.Sequential(
       nn.Conv2d(nc, ndf, 4, 2, 1, bias = False),
       nn.LeakyReLU(0.2, inplace = True)
@@ -79,9 +95,19 @@ class Discriminator(nn.Module):
       nn.LeakyReLU(0.2, inplace = True)
     )
 
+    self.hidden3 = nn.Sequential(
+      nn.Conv2d(ndf*4, ndf*8, 4, 2, 1, bias = False),
+      nn.BatchNorm2d(ndf*8),
+      nn.LeakyReLU(0.2, inplace = True)
+    )
 
-    self.out = nn.Sequential(
-      nn.Conv2d(ndf*4, 1, 3, 1, 0, bias = False),
+    self.out_mnist = nn.Sequential(
+      nn.Conv2d(ndf*8, 1, 3, 1, 0, bias = False),
+      nn.Sigmoid()
+    )
+
+    self.out_others = nn.Sequential(
+      nn.Conv2d(ndf*8, 1, 4, 1, 0, bias = False),
       nn.Sigmoid()
     )
 
@@ -89,5 +115,9 @@ class Discriminator(nn.Module):
     x = self.hidden0(x)
     x = self.hidden1(x)
     x = self.hidden2(x)
-    x = self.out(x)
+    if self.dname != 'mnist':
+      x = self.hidden3(x)
+      x = self.out_others(x)
+    else:
+      x = self.out_mnist(x)
     return x

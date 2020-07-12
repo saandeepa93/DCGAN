@@ -10,6 +10,9 @@ import torch
 import yaml
 import cv2
 
+def show(img):
+    plt.imshow(img)
+    plt.show()
 
 def ioshow(img):
   io.imshow(img)
@@ -20,8 +23,8 @@ def cvshow(img):
   cv2.waitKey(0)
   cv2.destroyAllWindows()
 
-def get_config():
-  with open('./config.yaml') as file:
+def get_config(config_path):
+  with open(config_path) as file:
     configs = yaml.load(file, Loader = yaml.FullLoader)
   return configs
 

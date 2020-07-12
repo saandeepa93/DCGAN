@@ -15,13 +15,17 @@ import numpy as np
 import modules.util as util
 
 
-class ColumbiaClass(Dataset):
-  def __init__(self, root_folder, transform = None):
-    super(ColumbiaClass, self).__init__()
+class CelebClass(Dataset):
+  def __init__(self, root_folder, size):
+    super(CelebClass, self).__init__()
     self.root_folder = root_folder
     self.all_files = glob.glob(os.path.join(self.root_folder, '*.jpg'))
-    self.transform = transform
-    self.size = util.get_config()['image']['size']
+    self.transform = transforms.Compose(
+      [transforms.ToPILImage(),
+      transforms.Resize((size, size)),
+      transforms.ToTensor(),
+      transforms.Normalize((0.5), (0.5)),
+    ])
 
   def __len__(self):
     return len(self.all_files)
@@ -32,8 +36,7 @@ class ColumbiaClass(Dataset):
       img = io.imread(file_name)
       if self.transform:
         img = self.transform(img)
-      img_resized = F.interpolate(img.unsqueeze(0), (self.size, self.size)).squeeze()
-      return img_resized
+      return img
 
 
 

@@ -8,6 +8,7 @@ import os, shutil
 from sys import exit as e
 
 from modules.gan import Discriminator, Generator
+from modules.dataset import CelebClass
 import modules.util as util
 from modules.util import Logger
 
@@ -17,23 +18,27 @@ def mnist_data(out_dir):
   compose = transforms.Compose(
     [transforms.ToTensor(),
     transforms.Normalize((0.5), (0.5)),
-    ])
-
+  ])
   return datasets.MNIST(root = out_dir, train = True, transform = compose, download = True)
 
 
-def train_gan(configs):
+def train_gan(configs, dataset_name):
   if os.path.isdir('./data/'):
     shutil.rmtree('./data/')
-  logger = Logger(model_name='VGAN', data_name='MNIST')
+  logger = Logger(model_name='DCGAN', data_name='MNIST')
   out_dir = configs['paths']['dataset']
-  dataset = mnist_data(out_dir)
+
+  if dataset_name == 'mnist':
+    dataset = mnist_data(out_dir)
+  elif dataset_name == 'celeb':
+    dataset = CelebClass(out_dir, configs['image']['size'])
+
   dataloader = DataLoader(dataset, batch_size = configs['hypers']['batch_size'], shuffle = True)
   num_batches = len(dataloader)
   test_noise = torch.randn(16, configs['hypers']['z'], 1, 1)
 
-  discriminator = Discriminator(configs['hypers']['nc'], configs['hypers']['ndf'])
-  generator = Generator(configs['hypers']['z'], configs['hypers']['ngf'], configs['hypers']['nc'])
+  discriminator = Discriminator(configs['hypers']['nc'], configs['hypers']['ndf'], dataset_name)
+  generator = Generator(configs['hypers']['z'], configs['hypers']['ngf'], configs['hypers']['nc'], dataset_name)
 
   criterion = nn.BCELoss()
 
@@ -41,8 +46,9 @@ def train_gan(configs):
   optimizer_g = optim.Adam(generator.parameters(), lr = configs['hypers']['lr'])
 
   for epoch in range(configs['hypers']['epochs']):
-    for b, (real_data,_) in enumerate(dataloader):
+    for b, real_data in enumerate(dataloader, 0):
       b_size = real_data.size(0)
+
       optimizer_d.zero_grad()
       labels = torch.full((b_size, ), 1, dtype = torch.float)
       output_real = discriminator(real_data).squeeze()
@@ -70,7 +76,7 @@ def train_gan(configs):
       # Log batch error
       logger.log(d_loss, g_loss, epoch, b, num_batches)        # Display Progress every few batches
       if (b) % 100 == 0:
-          test_images = (generator(test_noise)).view(16, 1, 28, 28)
+          test_images = (generator(test_noise)).view(16, 3, configs['image']['size'], configs['image']['size'])
           test_images = test_images.data
           logger.log_images(
               test_images, 16,

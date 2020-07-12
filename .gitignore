@@ -7,7 +7,6 @@ __pycache__
 input
 models/**
 output/**
-artifacts/**
 Columbia Gaze Data Set
 img_align_celeba
 dataset
