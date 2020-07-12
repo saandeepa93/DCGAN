@@ -1,6 +1,8 @@
 import torch
 from torch import nn, save, load
 
+from sys import exit as e
+
 
 class Generator(nn.Module):
   def __init__(self, nz, ngf, nc, dataset_name):
@@ -102,7 +104,7 @@ class Discriminator(nn.Module):
     )
 
     self.out_mnist = nn.Sequential(
-      nn.Conv2d(ndf*8, 1, 3, 1, 0, bias = False),
+      nn.Conv2d(ndf*4, 1, 3, 1, 0, bias = False),
       nn.Sigmoid()
     )
 

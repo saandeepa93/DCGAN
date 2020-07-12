@@ -19,7 +19,7 @@ Create a directory called `dataset` in the root folder. Pytorch dataset class wi
 
 ## Training
 ```bash
-python main.py train
+python main.py train --config /path_to_config_file
 ```
 
 ## Testing

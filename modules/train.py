@@ -30,7 +30,7 @@ def train_gan(configs, dataset_name):
 
   if dataset_name == 'mnist':
     dataset = mnist_data(out_dir)
-  elif dataset_name == 'celeb':
+  else:
     dataset = CelebClass(out_dir, configs['image']['size'])
 
   dataloader = DataLoader(dataset, batch_size = configs['hypers']['batch_size'], shuffle = True)
@@ -47,6 +47,8 @@ def train_gan(configs, dataset_name):
 
   for epoch in range(configs['hypers']['epochs']):
     for b, real_data in enumerate(dataloader, 0):
+      if dataset_name == 'mnist':
+        real_data, _ = real_data
       b_size = real_data.size(0)
 
       optimizer_d.zero_grad()
@@ -76,16 +78,16 @@ def train_gan(configs, dataset_name):
       # Log batch error
       logger.log(d_loss, g_loss, epoch, b, num_batches)        # Display Progress every few batches
       if (b) % 100 == 0:
-          test_images = (generator(test_noise)).view(16, 3, configs['image']['size'], configs['image']['size'])
-          test_images = test_images.data
-          logger.log_images(
-              test_images, 16,
-              epoch, b, num_batches
-          );
-          # Display status Logs
-          logger.display_status(
-              epoch, configs['hypers']['epochs'], b, num_batches,
-              d_loss, g_loss, output_real, output_fake
-          )
+        test_images = (generator(test_noise)).view(16, configs['hypers']['nc'], configs['image']['size'], configs['image']['size'])
+        test_images = test_images.data
+        logger.log_images(
+            test_images, 16,
+            epoch, b, num_batches
+        );
+        # Display status Logs
+        logger.display_status(
+            epoch, configs['hypers']['epochs'], b, num_batches,
+            d_loss, g_loss, output_real, output_fake
+        )
   generator.save(configs['paths']['model'])
 
