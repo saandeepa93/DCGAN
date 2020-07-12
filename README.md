@@ -22,13 +22,14 @@ Create a directory called `dataset` in the root folder. Pytorch dataset class wi
 python main.py train --config /path_to_config_file
 ```
 
-## Testing
-```bash
-python main.py test
-```
+## Result
+All the intermediate output can be found at `./data/images/DCGAN/dataset_name/`
 
 ## Configurations
 Any config setting can be found in `./config.yaml` file.
 
 ## Sample MNIST output after 30 epochs
-<img src="./artifacts/sample.png" width="500px"/>
+<img src="./artifacts/mnist.png" width="500px"/>
+
+## Sample CELEB output after 10 epochs
+<img src="./artifacts/celeb.png" width="500px"/>
